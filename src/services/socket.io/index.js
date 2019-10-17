@@ -34,7 +34,7 @@ export default (httpserver) => {
   handshake: true
 }))
 */
-ws.on('connection', onConnection(ws))
+  ws.on('connection', onConnection(ws))
 }
 
 const onConnection = (ws) => (socket) => {
@@ -43,10 +43,36 @@ const onConnection = (ws) => (socket) => {
   // console.log(userId)
 
   socket.on('connect_to_copter', connectToCopter(ws, socket))
+  socket.on('cmd_vel', onCmdVel)
+  socket.on('arm', onArm)
+  socket.on('takeoff', onTakeOff)
   socket.on('disconnect_from_copter', disconnectFromCopter(ws, socket))
   socket.on('disconnect', onDisconnect(ws, socket))
 }
-
+const onTakeOff = (msg) => {
+  console.log('Recieved arm cmd', msg, msg.copterId)
+  if (!msg.copterId) {
+    return
+  }
+  let { latitude, longitude, altitude } = msg
+  pub.publish(`/${msg.copterId}`, JSON.stringify({ cmd: 'TAKEOFF', latitude, longitude, altitude }))
+    .then(() => console.log('published'))
+}
+const onArm = (msg) => {
+  console.log('Recieved arm cmd', msg, msg.copterId)
+  if (!msg.copterId) {
+    return
+  }
+  pub.publish(`/${msg.copterId}`, JSON.stringify({ cmd: 'ARM' }))
+    .then(() => console.log('published'))
+}
+const onCmdVel = (msg) => {
+  if (!msg.copterId) {
+    return
+  }
+  let { x, y, z } = msg
+  pub.publish(`/${msg.copterId}/cmd_vel`, { x, y, z })
+}
 const connectToCopter = (ws, socket) => (copterId) => {
   console.log('Connection request', copterId)
   console.log(`joining to 'copter_${copterId}'`)
@@ -74,22 +100,22 @@ const connectToCopter = (ws, socket) => (copterId) => {
       return copter
     })
     .then((copter) => {
-      if (!copter || copter === null) {
-        redis.get(NODES_INFO_KEY)
-          // .then((nodes) => nodes[Math.round(Math.random() * nodes.length)])
-          .then((nodes) => nodes ? JSON.parse(nodes) : [])
-          .then((nodes) => {
-            console.log('Found following nodes:', nodes)
-            let msg = {
-              copterId,
-              uuid: nodes[0].uuid,
-              action: 'connect'
-            }
-            console.log('Sending message to redis channel: "copters"', msg)
-
-            return pub.publish('copters', JSON.stringify(msg))
-          })
+      if (copter) {
+        return copter
       }
+      return redis.get(NODES_INFO_KEY)
+        .then((nodes) => nodes ? JSON.parse(nodes) : [])
+        .then((nodes) => {
+          console.log('Found following nodes:', nodes)
+          let msg = {
+            copterId,
+            uuid: nodes[0].uuid,
+            action: 'connect'
+          }
+          console.log('Sending message to redis channel: "copters"', msg)
+
+          return pub.publish('copters', JSON.stringify(msg)).then(() => copterId)
+        })
     })
 }
 
