@@ -48,6 +48,15 @@ const onConnection = (ws) => (socket) => {
   socket.on('takeoff', onTakeOff)
   socket.on('disconnect_from_copter', disconnectFromCopter(ws, socket))
   socket.on('disconnect', onDisconnect(ws, socket))
+  socket.on('land', onLand)
+}
+const onLand = (msg) => {
+  if (!msg.copterId) {
+    return
+  }
+  let { latitude, longitude } = msg
+  pub.publish(`/${msg.copterId}`, JSON.stringify({ cmd: 'LAND', latitude, longitude, altitude: 0 }))
+    .then(() => console.log('published'))
 }
 const onTakeOff = (msg) => {
   console.log('Recieved arm cmd', msg, msg.copterId)
@@ -67,11 +76,12 @@ const onArm = (msg) => {
     .then(() => console.log('published'))
 }
 const onCmdVel = (msg) => {
+  console.log('Recieved cmd_vel', msg)
   if (!msg.copterId) {
     return
   }
   let { x, y, z } = msg
-  pub.publish(`/${msg.copterId}/cmd_vel`, { x, y, z })
+  pub.publish(`/${msg.copterId}/cmd_vel`, JSON.stringify({ x, y, z }))
 }
 const connectToCopter = (ws, socket) => (copterId) => {
   console.log('Connection request', copterId)
