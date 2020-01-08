@@ -11,6 +11,10 @@ const pub = new Redis(redisConfig)
 const NODE_COUNT_KEY = 'rosListeners'
 const NODES_INFO_KEY = 'nodes'
 
+//error codes
+const CONNECTION_ERROR = -1
+
+
 export default (httpserver) => {
   const ws = io(httpserver, {
     log: false,
@@ -80,8 +84,8 @@ const onCmdVel = (msg) => {
   if (!msg.copterId) {
     return
   }
-  let { x, y, z } = msg
-  pub.publish(`/${msg.copterId}/cmd_vel`, JSON.stringify({ x, y, z }))
+  let { linear, angular } = msg
+  pub.publish(`/${msg.copterId}/cmd_vel`, JSON.stringify({ linear, angular }))
 }
 const connectToCopter = (ws, socket) => (copterId) => {
   console.log('Connection request', copterId)
@@ -126,6 +130,9 @@ const connectToCopter = (ws, socket) => (copterId) => {
 
           return pub.publish('copters', JSON.stringify(msg)).then(() => copterId)
         })
+    })
+    .catch((err) => {
+      socket.emit('err', { code: CONNECTION_ERROR, msg: err.message})
     })
 }
 
