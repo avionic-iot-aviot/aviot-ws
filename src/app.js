@@ -9,8 +9,8 @@ import websockets from './services/socket.io'
 const app = express(apiRoot, api)
 const server = http.createServer(app)
 
-mongoose.connect(mongo.uri)
-mongoose.Promise = Promise
+//mongoose.connect(mongo.uri)
+//mongoose.Promise = Promise
 
 websockets(server)
 

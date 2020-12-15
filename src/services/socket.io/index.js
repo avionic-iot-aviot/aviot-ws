@@ -53,6 +53,17 @@ const onConnection = (ws) => (socket) => {
   socket.on('disconnect_from_copter', disconnectFromCopter(ws, socket))
   socket.on('disconnect', onDisconnect(ws, socket))
   socket.on('land', onLand)
+  socket.on('video_stream', onVideoStream)
+  socket.on('video_room', onVideoRoom)
+}
+
+const onVideoStream = (msg) => {
+  console.log('Received video stream msg: ', msg)
+  pub.publish(`/${msg.copterId}/streaming`, JSON.stringify({ action: msg.action }))
+}
+const onVideoRoom = (msg) => {
+  console.log('Received video room msg: ', msg)
+  pub.publish(`/${msg.copterId}/video_room`, JSON.stringify({ action: msg.action }))
 }
 const onLand = (msg) => {
   if (!msg.copterId) {

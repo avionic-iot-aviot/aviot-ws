@@ -30,9 +30,7 @@ const config = {
     jwtSecret: requireProcessEnv('JWT_SECRET'),
     mongo: {
       options: {
-        db: {
-          safe: true
-        }
+        
       }
     }
   },
@@ -53,11 +51,11 @@ const config = {
     ip: process.env.IP || undefined,
     port: process.env.PORT || 8080,
     mongo: {
-      uri: process.env.MONGODB_URI || 'mongodb://localhost/aviot'
+      uri: `mongodb://${process.env.MONGO_SERVICE_HOST}:${process.env.MONGO_SERVICE_PORT}/aviot` || 'mongodb://localhost/aviot'
     },
     redis: {
-      host: 'localhost',
-      port: 6379
+      host: process.env.NODE_ENV === 'production' ? requireProcessEnv('REDIS_SERVICE_HOST') : 'localhost',
+      port: process.env.NODE_ENV === 'production' ? requireProcessEnv('REDIS_SERVICE_PORT') : 6379
     }
   }
 }
