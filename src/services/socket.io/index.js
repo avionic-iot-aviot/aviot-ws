@@ -15,11 +15,12 @@ const NODES_INFO_KEY = 'nodes'
 const CONNECTION_ERROR = -1
 
 
+
 export default (httpserver) => {
   const ws = io(httpserver, {
     log: false,
     agent: false,
-    origin: '*',
+    //origins: '*',
     transports: ['websocket', 'hstmlfile', 'xhr-polling', 'jsonp-polling', 'polling'],
     handlePreflightRequest: (req, res) => {
       res.writeHead(200, {
@@ -28,14 +29,11 @@ export default (httpserver) => {
         "Access-Control-Allow-Credentials": true
       });
       res.end();
+    }
   })
-  ws.set('origin', '*:*')
-  ws.origin([
-    '*',
-    'localhost:8080',
-    'localhost:8081',
-    'http://localhost:8080',
-    'http://localhost:8081'
+  //ws.set('origin', '*:*')
+  ws.origins([
+    '*'
   ])
   ws.adapter(redisAdapter(redisConfig))
   /*
