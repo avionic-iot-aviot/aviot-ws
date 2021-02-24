@@ -11,11 +11,20 @@ export default (apiRoot, routes) => {
   const app = express()
 
   /* istanbul ignore next */
-  if (env === 'production' || env === 'development') {
-    app.use(cors())
-    app.use(compression())
-    app.use(morgan('dev'))
-  }
+  app.use((req, res, next) => {
+    //logger.debug('PATH: ' + req.originalUrl)
+    res.setHeader('X-Powered-By', 'Aviot Avionic IOT')
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Access-Control-Allow-Origin', req.get('origin') || '*')
+    res.setHeader('Access-Control-Allow-Methods', 'HEAD, OPTIONS, GET, POST, PUT, DELETE')
+    res.setHeader('Allow', 'HEAD, OPTIONS, GET, POST, PUT, DELETE')
+    res.setHeader('Access-Control-Max-Age', 86400)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.setHeader('Vary', 'Origin')
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, access_token')
+    next()
+  })
+
 
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
