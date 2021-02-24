@@ -19,11 +19,11 @@ export default (httpserver) => {
   const ws = io(httpserver, {
     log: false,
     agent: false,
-    origins: '*',
+    origin: '*',
     transports: ['websocket', 'hstmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
   })
-  ws.set('origins', '*:*')
-  ws.origins([
+  ws.set('origin', '*:*')
+  ws.origin([
     '*',
     'localhost:8080',
     'localhost:8081',
