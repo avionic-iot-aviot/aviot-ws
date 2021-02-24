@@ -22,6 +22,9 @@ export default (httpserver) => {
     agent: false,
     //origins: '*',
     transports: ['websocket', 'hstmlfile', 'xhr-polling', 'jsonp-polling', 'polling'],
+    allowRequest: (req, callback) => {
+      callback(null, true); // cross-origin requests will not be allowed
+    },
     handlePreflightRequest: (req, res) => {
       res.writeHead(200, {
         "Access-Control-Allow-Origin": req.headers.origin || '*',
