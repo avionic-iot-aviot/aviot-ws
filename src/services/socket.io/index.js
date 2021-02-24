@@ -20,7 +20,14 @@ export default (httpserver) => {
     log: false,
     agent: false,
     origin: '*',
-    transports: ['websocket', 'hstmlfile', 'xhr-polling', 'jsonp-polling', 'polling']
+    transports: ['websocket', 'hstmlfile', 'xhr-polling', 'jsonp-polling', 'polling'],
+    handlePreflightRequest: (req, res) => {
+      res.writeHead(200, {
+        "Access-Control-Allow-Origin": req.headers.origin || '*',
+        "Access-Control-Allow-Methods": "GET,POST, PUT",
+        "Access-Control-Allow-Credentials": true
+      });
+      res.end();
   })
   ws.set('origin', '*:*')
   ws.origin([
