@@ -63,6 +63,11 @@ const onConnection = (ws) => (socket) => {
   socket.on('land', onLand)
   socket.on('video_stream', onVideoStream)
   socket.on('video_room', onVideoRoom)
+  socket.on('rtt_test', onRttTest)
+}
+const onRttTest = (msg) => {
+  console.log('rtt_test: '+Date.now())
+  pub.publish(`/${msg.copterId}/rtt_test`, JSON.stringify({ }))
 }
 
 const onVideoStream = (msg) => {
