@@ -21,25 +21,28 @@ udp_server.on('error', (err) => {
     udp_server.close();
 });
 
-udp_server.on('message', (msg, rinfo) => {
-    console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-    switch(msg.event) {
+udp_server.on('message', (content, rinfo) => {
+    console.log(`server got: ${content} from ${rinfo.address}:${rinfo.port}`);
+    const content_json = JSON.parse(content);
+    const event = content_json.event;
+    const data = content_json.data;
+    switch(event) {
         case 'arm':
-            onArm(msg.data);
+            onArm(data);
             break;
         case 'land':
-            onLand(msg.data);
+            onLand(data);
             break;
         case 'takeoff':
-            onTakeOff(msg.data);
+            onTakeOff(data);
             break;
         case 'cmd_vel':
-            onCmdVel(msg.data);
+            onCmdVel(data);
             break;
         default:
             console.log("Missing or not a valid event.")
     }
-    udp_server.send(msg, rinfo.port, rinfo.address, (err) => {
+    udp_server.send(content, rinfo.port, rinfo.address, (err) => {
         console.log(err);
     });
 });
