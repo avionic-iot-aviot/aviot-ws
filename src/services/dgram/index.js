@@ -16,12 +16,12 @@ const CONNECTION_ERROR = -1
 //dgram
 const udp_server = dgram.createSocket('udp4');
 
-server.on('error', (err) => {
+udp_server.on('error', (err) => {
     console.log(`server error:\n${err.stack}`);
-    server.close();
+    udp_server.close();
 });
 
-server.on('message', (msg, rinfo) => {
+udp_server.on('message', (msg, rinfo) => {
     console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
     switch(msg.event) {
         case 'arm':
@@ -39,13 +39,13 @@ server.on('message', (msg, rinfo) => {
         default:
             console.log("Missing or not a valid event.")
     }
-    server.send(msg, rinfo.port, rinfo.address, (err) => {
+    udp_server.send(msg, rinfo.port, rinfo.address, (err) => {
         console.log(err);
     });
 });
 
-server.on('listening', () => {
-    const address = server.address();
+udp_server.on('listening', () => {
+    const address = udp_server.address();
     console.log(`server listening ${address.address}:${address.port}`);
 });
 
