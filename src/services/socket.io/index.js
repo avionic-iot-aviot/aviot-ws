@@ -66,8 +66,8 @@ const onConnection = (ws) => (socket) => {
   socket.on('rtt_test', onRttTest)
 }
 const onRttTest = (msg) => {
-  console.log('rtt_test: '+Date.now())
-  pub.publish(`/${msg.copterId}/rtt_test`, JSON.stringify({ }))
+  console.log(`rtt_test: ${msg.frontendId} ${Date.now()}`)
+  pub.publish(`/${msg.copterId}/rtt_test`, JSON.stringify({ frontendId: msg.frontendId }))
 }
 
 const onVideoStream = (msg) => {
