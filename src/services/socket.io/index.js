@@ -65,6 +65,7 @@ const onConnection = (ws) => (socket) => {
   socket.on('video_room', onVideoRoom)
   socket.on('rtt_test', onRttTest)
   socket.on('fence', onFence)
+  socket.on('mission', onMission)
   socket.on('mode', onMode)
   socket.on('stream_rate', onStreamRate)
 }
@@ -84,6 +85,10 @@ const onVideoRoom = (msg) => {
 const onFence = (msg) => {
   console.log('Recieved fence cmd', msg, msg.copterId)
   pub.publish(`/${msg.copterId}/fence`, JSON.stringify({ action: msg.action, data: msg.data }))
+}
+const onMission = (msg) => {
+  console.log('Recieved mission cmd', msg, msg.copterId)
+  pub.publish(`/${msg.copterId}/mission`, JSON.stringify({ action: msg.action, data: msg.data }))
 }
 const onMode = (msg) => {
   console.log('Recieved mode cmd', msg, msg.copterId)
