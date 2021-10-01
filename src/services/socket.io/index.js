@@ -66,6 +66,7 @@ const onConnection = (ws) => (socket) => {
   socket.on('rtt_test', onRttTest)
   socket.on('fence', onFence)
   socket.on('mission', onMission)
+  socket.on('servo', onServo)
   socket.on('mode', onMode)
   socket.on('stream_rate', onStreamRate)
 }
@@ -89,6 +90,10 @@ const onFence = (msg) => {
 const onMission = (msg) => {
   console.log('Recieved mission cmd', msg, msg.copterId)
   pub.publish(`/${msg.copterId}/mission`, JSON.stringify({ action: msg.action, data: msg.data }))
+}
+const onServo = (msg) => {
+  console.log('Recieved servo cmd', msg, msg.copterId)
+  pub.publish(`/${msg.copterId}/servo`, JSON.stringify({ action: msg.action, data: msg.data }))
 }
 const onMode = (msg) => {
   console.log('Recieved mode cmd', msg, msg.copterId)
