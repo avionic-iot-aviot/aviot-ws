@@ -67,6 +67,7 @@ const onConnection = (ws) => (socket) => {
   socket.on('fence', onFence)
   socket.on('mission', onMission)
   socket.on('servo', onServo)
+  socket.on('volume', onVolume)
   socket.on('mode', onMode)
   socket.on('stream_rate', onStreamRate)
 }
@@ -94,6 +95,10 @@ const onMission = (msg) => {
 const onServo = (msg) => {
   console.log('Recieved servo cmd', msg, msg.copterId)
   pub.publish(`/${msg.copterId}/servo`, JSON.stringify({ action: msg.action, data: msg.data }))
+}
+const onVolume = (msg) => {
+  console.log('Recieved volume cmd', msg, msg.copterId)
+  pub.publish(`/${msg.copterId}/volume`, JSON.stringify({ data: msg.data }))
 }
 const onMode = (msg) => {
   console.log('Recieved mode cmd', msg, msg.copterId)
